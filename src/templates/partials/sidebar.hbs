@@ -1,0 +1,57 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link" href="/">
+                <i class="mdi mdi-view-dashboard menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/clients/clients">
+                <i class="mdi mdi-account menu-icon"></i>
+                <span class="menu-title">Clients</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/clients/services">
+                <i class="mdi mdi-code-string menu-icon"></i>
+                <span class="menu-title">Service / Programs</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false"
+                aria-controls="ui-basic">
+                <i class="mdi mdi-account-box menu-icon"></i>
+                <span class="menu-title">Users</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="/users">Users</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="/roles">Roles</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="/change-password">Change Password</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+            <i class="mdi mdi-view-headline menu-icon"></i>
+            <span class="menu-title">Configurations</span>
+            <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="form-elements">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="/metadetails">Meta Details</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/configurations">Configurations</a></li>
+              </ul>
+            </div>
+          </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/logout">
+                <i class="mdi mdi-logout-variant menu-icon"></i>
+                <span class="menu-title">Logout</span>
+            </a>
+        </li>
+    </ul>
+</nav>

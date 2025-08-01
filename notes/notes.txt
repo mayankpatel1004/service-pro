@@ -1,0 +1,59 @@
+
+deposit_cancel : 
+--------------------------------
+id
+type (deposit/cancel)
+sr_no
+account_no
+account_name
+denomination
+serial_number
+reject_cf_susp_code
+entity_id (apollo_hospital)
+entity_location
+file_name
+agency_id
+user_id
+deleted_status
+deleted_at
+created_at
+updated_at
+
+collection : 
+--------------------------------
+id
+type (deposit/cancel)
+import_from (collection/eod)
+trade_no
+account_no
+account_name
+account_date
+account_time
+rs_10
+rs_20
+rs_50
+rs_100
+rs_200
+rs_500
+rs_2000
+total
+entity_id (apollo_hospital)
+entity_location
+file_name
+agency_id
+user_id
+display_status
+deleted_status
+deleted_at
+created_at
+updated_at
+
+
+Create_user
+=============
+first name
+last name
+email
+agency_id
+entity_id (Apollo Hospital)
+entity_location (Apollo Hospital Banglore,Apollo Hospital Manglore)

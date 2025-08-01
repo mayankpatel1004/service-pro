@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{>head}}
+</head>
+<body>
+    <div class="container-scroller">
+        {{>header}}
+        <div class="container-fluid page-body-wrapper">
+            {{>sidebar}}
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="row">
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-wrap justify-content-between">
+                                        <h4 class="card-title text-primary">{{page_title}}</h4>
+                                    </div>
+                                    <form action="/configurations/save" method="post">
+                                        <div class="row">
+                                            <div class="col-2 text-primary font-weight-bold text-center">Page Name</div>
+                                            <div class="col-3 text-primary font-weight-bold text-center">Page Title</div>
+                                            <div class="col-3 text-primary font-weight-bold text-center">Meta Title</div>
+                                            <div class="col-4 text-primary font-weight-bold text-center">Meta Description</div>
+                                        </div>
+                                        <div class="row">
+                                        {{#each metadetails}}
+                                            <div class="col-2 small mt-3 text-primary">{{userFriendlyTitle end_points}}</div>
+                                            <div class="col-3"><input type="text" name="page_title" id="page_title__{{meta_id}}" value="{{page_title}}" class="form-control formfields" /></div>
+                                            <div class="col-3"><input type="text" name="meta_title" id="meta_title__{{meta_id}}" value="{{meta_title}}" class="form-control formfields" /></div>
+                                            <div class="col-4 mb-3"><input type="text" name="meta_description" id="meta_description__{{meta_id}}" value="{{meta_description}}" class="form-control formfields" /></div>
+                                        {{/each}}
+                                        </div>
+                                    <div class="mb-4 d-flex justify-content-start">
+                                      <input type="button" class="btn btn-primary" value="Save" onclick="saveMetaDetails(event)" />
+                                    </div>
+                                  </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{>footer}}
+            </div>
+        </div>
+    </div>
+    {{>footerscript}}
+    <script>
+        function saveMetaDetails(e) {
+          e.preventDefault();
+          var values = {};
+          var fields = $('.formfields');
+          $.each(fields, function(i, field) {
+              let dom = '';
+              if($(field).attr('type') == 'checkbox'){
+                dom = $(field), name = dom.attr('id'), value = dom.is(':checked') ? 1 : 0;
+              } else {
+              dom = $(field), name = dom.attr('id'), value = dom.val(), checked = dom.is(':selected');
+              }
+              values[name] = value;
+          });
+          $.ajax({
+            type: "POST",
+            url: '/metadetails',
+            data: values,
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            success: function(response){
+                openSwalSuccess(response.message,'/metadetails');
+            }
+        });
+        }
+    </script>
+</body>
+</html>

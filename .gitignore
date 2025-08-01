@@ -1,0 +1,7 @@
+.env
+config.txt
+package-lock.json
+node_modules
+src/logs
+public/export
+public/uploads

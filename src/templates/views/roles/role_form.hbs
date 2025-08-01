@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{>head}}
+</head>
+<body>
+    <div class="container-scroller">
+        {{>header}}
+        <div class="container-fluid page-body-wrapper">
+            {{>sidebar}}
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="row">
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-wrap justify-content-between">
+                                        <h4 class="card-title text-primary">{{page_title}}</h4>
+                                    </div>
+                                    <form id="userForm" method="POST" enctype="multipart/form-data">
+                                        <div class="row">
+                                            {{#each fields}}
+                                            <div class="col-md-3 {{#ifEquals type "hidden"}}d-none{{/ifEquals}}">
+                                                {{#ifEquals type "select"}}
+                                                <label for="{{nm}}" class="text-primary small">{{lbl}}</label>
+                                                <select class="{{cls}}" name="{{nm}}"
+                                                id="{{nm}}" {{#ifEquals req "Y"}}required{{/ifEquals}} {{#if onchange}}onchange="{{onchange}}"{{/if}}>
+                                                {{#if options}}
+                                                {{#each options}}
+                                                <option value="{{ID}}" {{#ifEquals ../val ID}}selected{{else}}{{/ifEquals}}>{{#if NAME}}{{NAME}}{{/if}}</option>
+                                                {{/each}}
+                                                {{/if}}
+                                                </select>
+                                                {{else}}
+                                                    {{#ifEquals type "checkbox"}}
+                                                    <label for="{{nm}}" class="text-primary small">{{lbl}}</label>
+                                                    <input type="checkbox" id="{{nm}}" class="formfields" name="{{nm}}"  {{#ifEquals req "Y"}}required{{/ifEquals}}>
+                                                    {{else}}
+                                                        {{#ifEquals type "hidden"}}{{else}}
+                                                        <label for="{{nm}}" class="text-primary small">{{lbl}}</label>
+                                                        {{/ifEquals}}
+                                                        <input class="{{cls}}" type="{{type}}"
+                                                            name="{{nm}}" id="{{nm}}" value="{{val}}" placeholder="{{lbl}}" {{#ifEquals req "Y"}}required{{/ifEquals}} />
+                                                        {{/ifEquals}}
+
+                                                        {{#ifEquals type "file"}}
+                                                            {{#if val}}
+                                                            <a href="/public/uploads/{{val}}" target="_blank" class="small text-secondary">View File</a>
+                                                            {{/if}}
+                                                        {{/ifEquals}}
+                                                    {{/ifEquals}}
+                                            </div>
+                                            {{/each}}
+                                        </div>
+                                        <br />
+                                        {{#if modules}}
+                                        <div class="h5 text-primary">Modules List</div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div class="col-4 small text-primary">Module</div>
+                                                    <div class="col-2 small text-primary text-center">View</div>
+                                                    <div class="col-2 small text-primary text-center">Add</div>
+                                                    <div class="col-2 small text-primary text-center">Edit</div>
+                                                    <div class="col-2 small text-primary text-center">Delete</div>
+                                                </div>
+                                            {{#each modules}}
+                                                <div class="row">
+                                                    <div class="col-4 small">{{page_title}}<input type="hidden" name="module_id" value="{{meta_id}}" class="form-control formfields" /></div>
+                                                    <div class="col-2"><input type="checkbox" name="view" class="form-control formfields" /></div>
+                                                    <div class="col-2"><input type="checkbox" name="add" class="form-control formfields" /></div>
+                                                    <div class="col-2"><input type="checkbox" name="edit" class="form-control formfields" /></div>
+                                                    <div class="col-2"><input type="checkbox" name="delete" class="form-control formfields" /></div>
+                                                </div>
+                                            {{/each}}
+
+                                            {{#if role_access}}
+                                            <br /><br />
+                                            <table class="table table-striped">
+                                                <th>
+                                                    <td>Module</td>
+                                                    <td>Add</td>
+                                                    <td>Edit</td>
+                                                    <td>Delete</td>
+                                                    <td>View</td>
+                                                </th>
+                                                {{#each role_access}}
+                                                    <tr>
+                                                        <td>{{module_id}}</td>
+                                                        <td>{{grant_add}}</td>
+                                                        <td>{{grant_edit}}</td>
+                                                        <td>{{grant_delete}}</td>
+                                                        <td>{{grant_view}}</td>
+                                                    </tr>
+                                                {{/each}}
+                                            </table>
+                                            {{/if}}
+                                            </div>
+                                        </div>
+                                        {{/if}}
+                                        <div class="row mt-3">
+                                            <div class="col-md-12">
+                                                <span id="loading-button" class="small text-primary" style="display: none;">Please Wait....</span>
+                                                <button type="submit" onclick="return submitAdminForm(event)" class="btn btn-primary form-submit-button">Save</button>
+                                                <a href="{{listUrl}}" class="btn btn-primary form-submit-button">Back</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{>footer}}
+            </div>
+        </div>
+    </div>
+    {{>footerscript}}
+</body>
+</html>

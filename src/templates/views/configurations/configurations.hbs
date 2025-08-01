@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{>head}}
+</head>
+<body>
+    <div class="container-scroller">
+        {{>header}}
+        <div class="container-fluid page-body-wrapper">
+            {{>sidebar}}
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="row">
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-wrap justify-content-between">
+                                        <h4 class="card-title text-primary">{{page_title}}</h4>
+                                    </div>
+                                    <form action="/configurations/save" method="post">
+                                    {{#each configurations}}
+                                    <div class="mt-4">
+                                        <div class="accordion accordion-solid-header" id="accordion-{{id}}" role="tablist">
+                                          <div class="card">
+                                            <div class="card-header" role="tab" id="heading-{{id}}">
+                                              <h6 class="mb-0">
+                                                <a rel="nofollow" data-toggle="collapse" href="#collapse-{{id}}" aria-expanded="true" aria-controls="collapse-{{id}}">{{name}}</a>
+                                              </h6>
+                                            </div>
+                                            <div id="collapse-{{id}}" class="collapse {{#ifEquals @index 0}}show{{/ifEquals}}" role="tabpanel" aria-labelledby="heading-{{id}}" data-parent="#accordion-{{id}}">
+                                              <div class="card-body">
+                                                <div class="row">
+                                                  {{#each products}}
+                                                  <div class="col-3">
+                                                    <label>{{title}}</label>
+                                                    {{#ifEquals input_type "text"}}
+                                                    <input type="text" name="{{name}}" id="{{name}}" class="form-control formfields" value="{{value}}" autocomplete="off">
+                                                    {{/ifEquals}}
+                                                    {{#ifEquals input_type "email"}}
+                                                    <input type="email" name="{{name}}" id="{{name}}" class="form-control formfields" value="{{value}}" autocomplete="off">
+                                                    {{/ifEquals}}
+                                                    {{#ifEquals input_type "file"}}
+                                                    <input type="file" name="{{name}}" id="{{name}}" class="form-control formfields" autocomplete="off">
+                                                    {{/ifEquals}}
+                                                    {{#ifEquals input_type "textarea"}}
+                                                    <textarea name="{{name}}" id="{{name}}" class="form-control formfields" autocomplete="off">{{value}}</textarea>
+                                                    {{/ifEquals}}
+                                                    {{#ifEquals input_type "select"}}
+                                                    <select name="{{name}}" id="{{name}}" class="form-control formfields">
+                                                        <option value="">Select Option</option>
+                                                        {{#splitString options "@="}}
+                                                        <option value="{{this}}" {{#ifEquals this ../value}}selected{{/ifEquals}}>{{this}}</option>
+                                                        {{/splitString}}
+                                                    </select>
+                                                    {{/ifEquals}}
+
+                                                  </div>
+                                                  {{/each}}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {{/each}}
+                                    <div class="mb-4 d-flex justify-content-start">
+                                    <input type="button" class="btn btn-primary" value="Save" onclick="saveConfigurations(event)" />
+                                    </div>
+                                  </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{>footer}}
+            </div>
+        </div>
+    </div>
+    {{>footerscript}}
+    <script>
+        function saveConfigurations(e) {
+          e.preventDefault();
+          var values = {};
+          var fields = $('.formfields');
+          $.each(fields, function(i, field) {
+              let dom = '';
+              if($(field).attr('type') == 'checkbox'){
+                dom = $(field), name = dom.attr('id'), value = dom.is(':checked') ? 1 : 0;
+              } else {
+              dom = $(field), name = dom.attr('id'), value = dom.val(), checked = dom.is(':selected');
+              }
+              values[name] = value;
+          });
+          $.ajax({
+            type: "POST",
+            url: '/configurations',
+            data: values,
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            success: function(response){
+                openSwalSuccess(response.message,'/configurations');
+            }
+        });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{>head}}
+</head>
+<body>
+    <div class="container-scroller">
+        {{>header}}
+        <div class="container-fluid page-body-wrapper">
+            {{>sidebar}}
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="row">
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-wrap justify-content-between">
+                                        <h4 class="card-title text-primary">{{page_title}}</h4>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 justify-content-start">
+                                            <input type="text" class="form-control-sm" id="search_keyword" placeholder="{{search_keyword}}">
+                                        </div>
+                                        <div class="col-3 justify-content-start">
+                                            <button class="btn btn-sm btn-primary" onclick="getScreenData(1)">Search</button>
+                                            <a class="btn btn-sm btn-primary text-white" href="{{listUrl}}">Reset</a>
+                                        </div>
+                                        <div class="col-2 justify-content-start"></div>
+                                        <div class="col-2 justify-content-end">
+                                            <select class="form-control" id="select_status">
+                                                <option value="">Select Status</option>
+                                                <option value="Y">Active</option>
+                                                <option value="N">Inactive</option>
+                                                <option value="T">Delete</option>
+                                                <option value="ES">Export Selected</option>
+                                                <option value="EA">Export All</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-2 justify-content-end">
+                                            <button class="btn btn-sm btn-primary" id="search_by_name_btn" onclick="updateStatus()">Apply</button>
+                                            <a class="btn btn-sm btn-primary float-right" href="{{formUrl}}">+</a>
+                                        </div>
+                                    </div>
+                                    <table class="table table-striped">
+                                      <thead class="text-primary">
+                                        <tr>
+                                            <th>
+                                                <input type="checkbox" onchange="checkAll(this,'allitems')" id="checkall" name="chk[]" class="ml-2" />
+                                            </th>
+                                          <th>Title</th>
+                                          <th>Alias</th>
+                                          <th>Display Order</th>
+                                          <th>Display Status</th>
+                                          <th>Last</th>
+                                          <th>Created</th>
+                                          <th>PK</th>
+                                          <th>Sr.No</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody class="text-secondary" id="listing_display_data">
+                                      </tbody>
+                                      {{>pagination}}
+                                    </table>
+                                    <div class="loader" id="loader">
+                                        <div class="spinner"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{>footer}}
+            </div>
+        </div>
+    </div>
+    {{>footerscript}}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            setTimeout(function(){
+                getScreenData(1);
+            },500);
+        });
+        function getScreenData(page_no = 1){
+            $("#listing_display_data").html('');
+            let search_keyword = $("#search_keyword").val();
+            let pagination_html = '<option value="">Go To</option>';
+            $.ajax({
+                type: "POST",
+                url: '{{listUrl}}',
+                data: {
+                    search_keyword: search_keyword,
+                    page_no: page_no
+                },
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                success: function(response){
+                    console.log(response);
+                  let counter = 0;
+                  let items = response.data;
+                  if(items.length > 0){
+                    $.each(items, function(index, item) {
+                        counter++;
+                        $("#listing_display_data").append(`
+                            <tr>
+                                <td><input type="checkbox" class="checkbox_css ml-3 sales_summary_list_checkbox" name="chk[]" id="chk_${item.role_id}" accept="allitems" value="${item.role_id}" /></td>
+                                <td><a href="{{formUrl}}?edit_id=${item.role_id}">${item.role_title}</a></td>
+                                <td>${item.item_alias}</td>
+                                <td><span class="badge badge-${item.display_status == 'Yes' ? 'success' : 'danger'}">${item.display_status}</span></td>
+                                <td><span class="badge badge-${item.deleted_status == 'Yes' ? 'danger' : 'success'}">${item.deleted_status}</span></td>
+                                <td>${item.updated_at}</td>
+                                <td>${item.created_at}</td>
+                                <td>${item.role_id}</td>
+                                <td>${counter}</td>
+                            </tr>
+                        `);
+                    });
+                    let page_number = $("#current_page_no").val();
+                    console.log(response.arrTotalPages.length)
+                    if(response.arrTotalPages.length == 1){
+                        pagination_html += `<option value="1">1</option>`;
+                    } else {
+                        for(index in response.arrTotalPages) {
+                            pagination_html += `<option value="${parseInt(index)+parseInt(1)}">${parseInt(index)+parseInt(1)}</option>`;
+                        }
+                    }
+                    $("#current_page_no").html(pagination_html);
+                    $("#current_page_no").val(response.current_page_no);
+                  } else {
+                    $("#listing_display_data").append(`
+                      <tr>
+                        <td colspan="100%" class="text-center text-secondary">No Data Found</td>
+                      </tr>
+                    `);
+                  }
+                $("#loader").hide();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

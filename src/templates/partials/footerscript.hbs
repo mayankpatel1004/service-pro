@@ -1,0 +1,204 @@
+<script src="../../../../public/vendors/js/vendor.bundle.base.js"></script>
+<script src="../../../../public/js/off-canvas.js"></script>
+<script src="../../../../public/vendors/sweetalert/sweetalert.min.js"></script>
+<script src="../../../../public/vendors/select2/select2.min.js"></script>
+<script src="../../../../public/js/select2.js"></script>
+<script src="../../../../public/js/template.js"></script>
+
+<script type="text/javascript">
+if(localStorage.getItem('user_photo') != ""){
+    if(localStorage.getItem('user_photo') == 'null'){
+        $('#profile_picture').attr('src','../../public/images/default_profile_photo.png');
+    } else {
+        $('#profile_picture').attr('src','../../public/uploads/'+localStorage.getItem('user_photo'));
+    }
+}
+$(document).ready(function(){
+    $(".readonly").attr('readonly',true);
+    $("#login_name").html(localStorage.getItem('user_name'));
+});
+
+function openSwalSuccess(message,reload_url){
+    swal({
+      title: 'Success',
+      text: message,
+      timer: 1500,
+      button: false,
+      icon: 'success',
+    }).then(
+      function() {
+        if(typeof reload_url !== undefined && reload_url != ""){
+        window.location.href = reload_url;
+        } else {
+        location.reload();
+        }
+      },
+      function(dismiss) {
+        if (dismiss === 'timer') {
+          console.log('I was closed by the timer')
+        }
+      }
+    )
+  }
+
+  function checkAll(ele, alt) {
+    var checkboxes = document.getElementsByTagName('input');
+    if (ele.checked) {
+      for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].type == 'checkbox' && checkboxes[i].accept == alt) {
+          checkboxes[i].checked = true;
+        }
+      }
+    } else {
+      for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].type == 'checkbox' && checkboxes[i].accept == alt) {
+          checkboxes[i].checked = false;
+        }
+      }
+    }
+  }
+
+  function updateStatus(){
+      let status = $("#select_status").val();
+      let checkboxes = document.querySelectorAll('input[name="chk[]"]');
+      let pk_ids = [];
+      for (var i = 0; i < checkboxes.length; i++) {
+        console.log("accept", checkboxes[i].accept);
+        if (checkboxes[i].type == 'checkbox' && 
+            checkboxes[i].accept == 'allitems' && 
+            checkboxes[i].checked) { 
+            pk_ids.push(checkboxes[i].value);
+        }
+    }
+      $.ajax({
+          type: "POST",
+          url: '{{listUrl}}',
+          data: {
+              pk_ids: pk_ids,
+              status: status,
+              action: 'update_status'
+          },
+          headers: {
+              'Authorization': 'Bearer ' + localStorage.getItem('token')
+          },
+          success: function(response){
+              $('#checkall').prop('checked', false);
+              getScreenData($("#current_page_no").val());
+              if(response.arrTotalPages == 0){
+                window.location.href = response.url;
+              }
+          }
+      });
+  }
+
+  /*function submitAdminForm(e) {
+    e.preventDefault();
+    
+    var formData = new FormData();
+    var fields = $('.formfields');
+    
+    $.each(fields, function(i, field) {
+        field = $(field);
+        var name = field.attr('id');
+        
+        if(field.attr('type') == 'checkbox') {
+            formData.append(name, field.is(':checked') ? 1 : 0);
+        } 
+        else if(field.attr('type') == 'file') {
+            // Handle multiple files if needed
+            $.each(field[0].files, function(i, file) {
+                formData.append(name, file);
+            });
+        }
+        else {
+            formData.append(name, field.val());
+        }
+    });
+    
+    console.log([...formData]); // For debugging
+    console.log("=======================>",formData);
+    $.ajax({
+        type: "POST",
+        url: '{{formUrl}}',
+        data: formData,
+        processData: false,  // Important for file upload
+        contentType: false, // Important for file upload
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        success: function(response){
+            window.location.href = '{{listUrl}}';
+        },
+        error: function(xhr, status, error) {
+            console.error("Error:", error);
+        }
+    });
+}*/
+
+function submitAdminForm(e) {
+  e.preventDefault();
+  
+  $("#loading-button").show();
+  $(".form-submit-button").hide();
+
+  var formData = new FormData();
+  var fields = $('.formfields');
+
+  console.log("Fields found:", fields.length);
+
+  $.each(fields, function(i, field) {
+      field = $(field);
+      var name = field.attr('name'); // Use 'name' not 'id'
+
+      if (!name) {
+          console.warn('Missing name attribute:', field);
+          return;
+      }
+
+      if (field.attr('type') == 'checkbox') {
+          formData.append(name, field.is(':checked') ? 1 : 0);
+      } 
+      else if (field.attr('type') == 'file') {
+          $.each(field[0].files, function(i, file) {
+              formData.append(name, file);
+          });
+      }
+      else {
+          formData.append(name, field.val());
+      }
+  });
+
+  console.log("FormData entries:");
+  for (let pair of formData.entries()) {
+      console.log(pair[0]+ ': ' + pair[1]);
+  }
+
+  $.ajax({
+      type: "POST",
+      url: '{{formUrl}}',
+      data: formData,
+      processData: false,
+      contentType: false,
+      headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+      },
+      success: function(response){
+        if(response.success == 0){
+          alert(response.message);
+          $("#loading-button").hide();
+          $(".form-submit-button").show();
+        } else {
+          openSwalSuccess(response.message, '{{listUrl}}');
+        }
+          //window.location.href = '{{listUrl}}';
+      },
+      error: function(xhr, status, error) {
+          $("#loading-button").hide();
+          $(".form-submit-button").show();
+          console.error("Error:", error);
+      }
+  });
+}
+
+
+</script>
