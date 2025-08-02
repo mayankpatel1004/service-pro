@@ -22,6 +22,8 @@ exports.DBTABLES = {
     CLIENTS : "clients",
     SERVICE_PROGRAM : "service_program",
     SERVICE_PROGRAM_META : "service_program_meta",
+    SCHEDULE : "schedule",
+    SCHEDULE_DETAILS : "schedule_details",
     ROLES: "role",
     ROLE_ACCESS: "role_access",
     CHANGEPASSWORD_SUBJECT : "Change Password ",
