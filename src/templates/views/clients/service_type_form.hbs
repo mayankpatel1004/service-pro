@@ -2,6 +2,29 @@
 <html lang="en">
 <head>
     {{>head}}
+    <style>
+        .container1 {
+            margin: 10px 0 0 0;
+            padding: 0px;
+            
+        }
+        .textbox-group{
+            margin: 5px 10px;
+            float: left;
+        }
+        button {
+            margin: 5px 10px;
+        }
+
+        .container1 input {
+            border: 1px solid #f6f2f2;
+            font-weight: 400;
+            font-size: 0.775rem;
+            height: auto;
+            padding: 0.475rem 0.375rem;
+        }
+        
+    </style>
 </head>
 <body>
     <div class="container-scroller">
@@ -25,7 +48,6 @@
                                                 <label for="{{nm}}" class="text-primary small">{{lbl}}</label>
                                                 <select class="{{cls}}" name="{{nm}}"
                                                 id="{{nm}}" {{#ifEquals req "Y"}}required{{/ifEquals}} {{#if onchange}}onchange="{{onchange}}"{{/if}}>
-                                                <option value="">Select Option</option>
                                                 {{#if options}}
                                                 {{#each options}}
                                                 <option value="{{ID}}" {{#ifEquals ../val ID}}selected{{else}}{{/ifEquals}}>{{#if NAME}}{{NAME}}{{/if}}</option>
@@ -53,6 +75,17 @@
                                             </div>
                                             {{/each}}
                                         </div>
+                                        
+                                        <div id="service-meta"></div>
+                                        {{#each meta_data}}
+                                        <div class="container1" id="e_{{@index}}" data-level="e_{{@index}}">
+                                            <div class="textbox-group">
+                                                <label></label>
+                                                <input type="text" value="{{sub_service_title}}" class="formfields" name="sub_service" placeholder="Service Name">
+                                            </div>
+                                            <button type="button" class="btn btn-sm delete-row btn-danger" onclick="deleteExistingRow(this)">Remove</button>
+                                        </div>
+                                        {{/each}}
                                         <div class="row mt-3">
                                             <div class="col-md-12">
                                                 <span id="loading-button" class="small text-primary" style="display: none;">Please Wait....</span>
@@ -71,5 +104,75 @@
         </div>
     </div>
     {{>footerscript}}
+    <script>
+        // Counter to keep track of added elements
+        let elementCounter = 0;
+        
+        // Function to create a new button with textboxes
+        function createButtonWithTextboxes(parentElement, level = 0, maxLevel = 5) {
+            if (level >= maxLevel) {
+                alert('Maximum level reached!');
+                return;
+            }
+            
+            const container = document.createElement('div');
+            container.className = 'container1';
+            container.dataset.level = level;
+            
+            // Create textbox group 1
+            const textboxGroup1 = document.createElement('div');
+            textboxGroup1.className = 'textbox-group';
+            const label1 = document.createElement('label');
+            //label1.textContent = `Title`;
+            const input1 = document.createElement('input');
+            input1.type = 'text';
+            input1.className = 'formfields';
+            input1.name = 'sub_service';
+            input1.placeholder = 'Service Name';
+            textboxGroup1.appendChild(label1);
+            textboxGroup1.appendChild(input1);
+            
+            
+            // Create add button
+            const addButton = document.createElement('button');
+            addButton.type = 'button';
+            addButton.textContent = `Add New `;
+            addButton.className = `btn btn-sm add-new btn-primary`;
+            addButton.onclick = function() {
+                createButtonWithTextboxes(container, level + 1, maxLevel);
+            };
+            
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = `btn btn-sm delete-row btn-danger`;
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = function() {
+                parentElement.removeChild(container);
+            };
+            
+            container.appendChild(textboxGroup1);
+            container.appendChild(removeButton);
+            if(level == 0){
+                container.appendChild(addButton);
+            }
+            
+            parentElement.appendChild(container);
+            elementCounter++;
+        }
+        
+        // Initialize the first button
+        document.addEventListener('DOMContentLoaded', function() {
+            const rootContainer = document.getElementById('service-meta');
+            createButtonWithTextboxes(rootContainer);
+        });
+        function deleteExistingRow(button) {
+            // Find the parent container1 div and remove it
+            const container = button.closest('.container1');
+            if (container) {
+                container.remove();
+            }
+        }
+         
+    </script>
 </body>
 </html>

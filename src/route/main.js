@@ -377,12 +377,17 @@ router.post('/change-password', checkTokenExists, async (req, res) => {
 
 /********************* User Modules Start *********************/
 router.get('/users', checkTokenExists, async (req, res) => {
+	let onlyAdmins = 0;
+	if(req.query.adm == 1){
+		onlyAdmins = 1;
+	}
     const meta_details = await functions.getMetaDetails(req.route.path);
 	const loginDetails = await functions.loginDetails(req);
 	let viewDirectory = path.join(__dirname, '../') + 'templates/views/users/users';
 	const responseData = {
 		page_title: meta_details[0].page_title,
 		meta_title: meta_details[0].meta_title,
+		onlyAdmins: onlyAdmins,
 		meta_description: meta_details[0].meta_description,
 		login_id: loginDetails.user_id,
 		role_id: loginDetails.user_role_id,
@@ -402,6 +407,11 @@ router.post('/users', checkTokenExists,async (req, res) => {
 	let page_no = 1;
 	if (req && req.body.page_no !== undefined && req.body.page_no != '/') {
 		page_no = req.body.page_no;
+	}
+	if(req.body.only_admins == 1){
+		searchKeywordString += ` and user_role_id < 3 `;
+	} else {
+		searchKeywordString += ` and user_role_id >= 3 `;
 	}
 	let rpp = CONFIG.RECORDS_PER_PAGE;
 	let start = (parseInt(page_no) - 1) * parseInt(rpp);
@@ -514,14 +524,31 @@ router.post('/users', checkTokenExists,async (req, res) => {
 
 router.get('/user_form', checkTokenExists, async (req, res) => {
 	const arrFields = [];
+
+	const timePart = Date.now() % 10000;
+    const randomPart = Math.floor(Math.random() * 100);
+
     const meta_details = await functions.getMetaDetails(req.route.path);
 	const loginDetails = await functions.loginDetails(req);
 	let edit_id = 0;
 	let edit_firstname = '';
 	let edit_lastname = '';
+	let edit_company_name = "";
+	let edit_user_code = parseInt(`${timePart}${randomPart}`.slice(-6), 10);
 	let edit_email = '';
 	let edit_active_status = 'Y';
 	let edit_role_id = 0;
+
+	let edit_type_of_program = "";
+    let edit_sub_services = "";
+    let edit_contact_1 = "";
+    let edit_contact_2 = "";
+    let edit_gst_no = "";
+    let edit_tan = "";
+    let edit_pan = "";
+    let edit_type_of_user = "";
+	let edit_service_type = "";
+
 	let readonly = '';
 	let user_photo = '';
 	if (req.query.edit_id && req.query.edit_id > 0) {
@@ -530,11 +557,22 @@ router.get('/user_form', checkTokenExists, async (req, res) => {
 		await db.query(sqlUser, async (error, results, fields) => {
 			if (results && results.length > 0) {
 				edit_id = results[0].user_id;
+				edit_company_name = results[0].company_name;
+    			edit_user_code = results[0].user_code;
 				edit_firstname = results[0].user_firstname;
 				edit_lastname = results[0].user_lastname;
 				edit_email = results[0].user_email;
 				edit_active_status = results[0].active_status;
 				edit_role_id = results[0].user_role_id;
+				edit_type_of_program = results[0].type_of_program;
+                edit_sub_services = results[0].sub_services;
+				edit_contact_1 = results[0].contact_1;
+                edit_contact_2 = results[0].contact_2;
+                edit_gst_no = results[0].gst_no;
+                edit_tan = results[0].tan;
+                edit_pan = results[0].pan;
+				edit_service_type = results[0].service_type;
+                edit_type_of_user = results[0].type_of_user;
 				user_photo = results[0].user_photo;
 				readonly = 'readonly';
 			}
@@ -580,6 +618,70 @@ router.get('/user_form', checkTokenExists, async (req, res) => {
 			cls: 'form-control formfields',
 		});
 		arrFields.push({
+			type: 'text',
+			lbl: 'Company Name',
+			nm: 'company_name',
+			val: edit_company_name,
+			ph: '',
+			req: 'N',
+			cls: 'form-control formfields',
+		});
+        arrFields.push({
+			type: 'hidden',
+			lbl: 'Client Code',
+			nm: 'user_code',
+			val: edit_user_code,
+			ph: '',
+			req: 'N',
+			cls: 'form-control formfields',
+		});
+		arrFields.push({
+			type: 'select',
+			lbl: 'Industry Type',
+			nm: 'service_type',
+			val: edit_service_type,
+			ph: '',
+			req: 'N',
+			options: await functions.serviceType(),
+			cls: 'form-control js-example-basic-single formfields',
+		});
+        /*arrFields.push({
+			type: 'text',
+			lbl: 'Type Of Program',
+			nm: 'type_of_program',
+			val: edit_type_of_program,
+			ph: '',
+			req: 'N',
+			cls: 'form-control formfields',
+		});
+        arrFields.push({
+			type: 'text',
+			lbl: 'Sub Services',
+			nm: 'sub_services',
+			val: edit_sub_services,
+			ph: '',
+			req: 'N',
+			cls: 'form-control formfields',
+		});*/
+        arrFields.push({
+			type: 'text',
+			lbl: 'Contact 1',
+			nm: 'contact_1',
+			val: edit_contact_1,
+			ph: '',
+			req: 'N',
+			cls: 'form-control formfields',
+		});
+        arrFields.push({
+			type: 'text',
+			lbl: 'Contact 2',
+			nm: 'contact_2',
+			val: edit_contact_2,
+			ph: '',
+			req: 'N',
+			cls: 'form-control formfields',
+		});
+		arrFields.push({
 			type: 'file',
 			lbl: 'Photo',
 			nm: 'user_photo',
@@ -598,6 +700,33 @@ router.get('/user_form', checkTokenExists, async (req, res) => {
 			cls: 'form-control formfields ' + readonly,
 		});
 		arrFields.push({
+			type: 'text',
+			lbl: 'GST No.',
+			nm: 'gst_no',
+			val: edit_gst_no,
+			ph: '',
+			req: 'N',
+			cls: 'form-control formfields',
+		});
+        arrFields.push({
+			type: 'text',
+			lbl: 'TAN',
+			nm: 'tan',
+			val: edit_tan,
+			ph: '',
+			req: 'N',
+			cls: 'form-control formfields',
+		});
+        arrFields.push({
+			type: 'text',
+			lbl: 'PAN',
+			nm: 'pan',
+			val: edit_pan,
+			ph: '',
+			req: 'N',
+			cls: 'form-control formfields',
+		});
+        arrFields.push({
 			type: 'select',
 			lbl: 'Active Status',
 			nm: 'active_status',
@@ -702,6 +831,17 @@ router.post('/user_form', userImageUpload, async (req, res) => {
 	}
 	console.log("sqlSave",sqlSave);
 	await db.query(sqlSave, async (error, results, fields) => {
+		let save_id = 0;
+		if(data.edit_id > 0){
+			save_id = data.edit_id;
+		} else {
+			save_id = results.insertId;
+			let sqlInsertService = `INSERT INTO ${DBTABLES.SERVICE} SET user_id = '${save_id}',service_type = '${data.service_type}', created_at = NOW(), updated_at = NOW()`;
+			await db.query(sqlInsertService, async (error, results, fields) => {
+
+			});
+		}
+
 		res.send({
 			success: ACTION_MESSAGES.SUCCESS_FLAG,
 			message: ACTION_MESSAGES.REQUEST_SUCCESS,

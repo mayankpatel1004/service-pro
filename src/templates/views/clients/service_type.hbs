@@ -23,7 +23,7 @@
                                         </div>
                                         <div class="col-3 justify-content-start">
                                             <button class="btn btn-sm btn-primary" onclick="getScreenData(1)">Search</button>
-                                            <a class="btn btn-sm btn-primary text-white" href="{{listUrl}}{{#ifEquals onlyAdmins 1}}?adm=1{{else}}?adm=0{{/ifEquals}}">Reset</a>
+                                            <a class="btn btn-sm btn-primary text-white" href="{{listUrl}}">Reset</a>
                                         </div>
                                         <div class="col-2 justify-content-start"></div>
                                         <div class="col-2 justify-content-end">
@@ -47,11 +47,9 @@
                                             <th>
                                                 <input type="checkbox" onchange="checkAll(this,'allitems')" id="checkall" name="chk[]" class="ml-2" />
                                             </th>
-                                          <th>Name</th>
-                                          <th>Email</th>
-                                          <th>Active?</th>
-                                          <th>Deleted?</th>
-                                          <th>Registered</th>
+                                          <th>Service</th>
+                                          <th>Display Status</th>
+                                          <th>Created</th>
                                           <th>Last</th>
                                           <th>SrNo</th>
                                           <th>ID</th>
@@ -89,8 +87,7 @@
                 url: '{{listUrl}}',
                 data: {
                     search_keyword: search_keyword,
-                    page_no: page_no,
-                    only_admins: '{{onlyAdmins}}'
+                    page_no: page_no
                 },
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -104,15 +101,13 @@
                         counter++;
                         $("#listing_display_data").append(`
                             <tr>
-                                <td><input type="checkbox" class="checkbox_css ml-3 sales_summary_list_checkbox" name="chk[]" id="chk_${item.user_id}" accept="allitems" value="${item.user_id}" /></td>
-                                <td><a href="{{formUrl}}?edit_id=${item.user_id}">${item.user_firstname} ${item.user_lastname}</a></td>
-                                <td>${item.user_email}</td>
-                                <td><span class="badge badge-${item.active_status == 'Yes' ? 'success' : 'danger'}">${item.active_status}</span></td>
-                                <td><span class="badge badge-${item.deleted_status == 'Yes' ? 'danger' : 'success'}">${item.deleted_status}</span></td>
+                                <td><input type="checkbox" class="checkbox_css ml-3 sales_summary_list_checkbox" name="chk[]" id="chk_${item.service_type_id}" accept="allitems" value="${item.service_type_id}" /></td>
+                                <td><a href="{{formUrl}}?edit_id=${item.service_type_id}">${item.service_type_title}</a></td>
+                                <td><span class="badge badge-${item.display_status == 'Yes' ? 'success' : 'danger'}">${item.display_status}</span></td>
                                 <td>${item.created_at}</td>
                                 <td>${item.updated_at}</td>
                                 <td>${counter}</td>
-                                <td>${item.user_id}</td>
+                                <td>${item.service_type_id}</td>
                             </tr>
                         `);
                     });

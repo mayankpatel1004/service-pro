@@ -48,11 +48,9 @@
                                                 <input type="checkbox" onchange="checkAll(this,'allitems')" id="checkall" name="chk[]" class="ml-2" />
                                             </th>
                                           <th>Name</th>
-                                          <th>Type</th>
-                                          <th>Display Status</th>
-                                          <th>Created</th>
-                                          <th>Last</th>
+                                          <th>Company</th>
                                           <th>SrNo</th>
+                                          <th>Action</th>
                                           <th>ID</th>
                                         </tr>
                                       </thead>
@@ -103,12 +101,10 @@
                         $("#listing_display_data").append(`
                             <tr>
                                 <td><input type="checkbox" class="checkbox_css ml-3 sales_summary_list_checkbox" name="chk[]" id="chk_${item.service_id}" accept="allitems" value="${item.service_id}" /></td>
-                                <td><a href="{{formUrl}}?edit_id=${item.service_id}">${item.service_name}</a></td>
-                                <td><a href="{{formUrl}}?edit_id=${item.service_id}">${item.service_type}</a></td>
-                                <td><span class="badge badge-${item.display_status == 'Yes' ? 'success' : 'danger'}">${item.display_status}</span></td>
-                                <td>${item.created_at}</td>
-                                <td>${item.updated_at}</td>
+                                <td><a href="{{formUrl}}?edit_id=${item.service_id}">${item.user_firstname}</a></td>
+                                <td><a href="{{formUrl}}?edit_id=${item.service_id}">${item.company_name}</a></td>
                                 <td>${counter}</td>
+                                <td><a href="{{formUrl}}?edit_id=${item.service_id}" class="btn btn-primary btn-sm">+</a></td>
                                 <td>${item.service_id}</td>
                             </tr>
                         `);

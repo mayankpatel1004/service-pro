@@ -1,0 +1,48 @@
+Type of services : 
+1) Petroleum 
+2) Call Center 
+3) Saloon Service
+4) Home Applience Maintenance Service
+
+
+Program (Petroleum) :  
+--------------------
+1) Petrol Filling
+2) Diesel Filling 
+3) Gas Filling 
+4) Air Checkup
+5) Punture Service 
+6) Fresh Water fillup
+7) Snacks
+
+When we create a client?
+
+Type of services (Dropdown) (Petroleum)
+Checkbox Petrol Filling (Y)
+Checkbox Diesel Filling (Y)
+Checkbox Gas Filling 
+Checkbox Air Checkup (Y)
+Checkbox Punture Service 
+Checkbox Fresh Water fillup
+Checkbox Snacks
+
+Super Admin 
+Client : 
+1) Name
+2) Company Name
+3) Client Code 
+4) Select Program (Petroleum). 
+5) Sub Program (Optional).
+
+
+
+
+
+Add Service : 
+
+Industry Selection
+Company Selection.
+
+
+Add Client : 
+Need Industry Type dropdown.

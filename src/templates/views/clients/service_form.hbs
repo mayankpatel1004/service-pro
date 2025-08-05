@@ -48,6 +48,7 @@
                                                 <label for="{{nm}}" class="text-primary small">{{lbl}}</label>
                                                 <select class="{{cls}}" name="{{nm}}"
                                                 id="{{nm}}" {{#ifEquals req "Y"}}required{{/ifEquals}} {{#if onchange}}onchange="{{onchange}}"{{/if}}>
+                                                <option value="">Select Option</option>
                                                 {{#if options}}
                                                 {{#each options}}
                                                 <option value="{{ID}}" {{#ifEquals ../val ID}}selected{{else}}{{/ifEquals}}>{{#if NAME}}{{NAME}}{{/if}}</option>
@@ -75,7 +76,19 @@
                                             </div>
                                             {{/each}}
                                         </div>
-                                        <div id="service-meta"></div>
+
+                                        <div class="small text-primary mt-3">Select Below option from selected service</div>
+                                        <!-- {{#each meta}}
+                                        <div class="row">
+                                            <div class="col-1">
+                                                <input type="checkbox" checked name="meta_{{meta_id}}" id="meta_{{meta_id}}" class="formfields form-control mt-2" value="{{meta_id}}" />
+                                            </div>
+                                            <div class="col-11">
+                                                <label class="small" for="meta_{{meta_id}}">{{meta_id}}</label>
+                                            </div>
+                                        </div>
+                                        {{/each}}-->
+                                        <div id="service_response"></div>
                                         <div class="row mt-3">
                                             <div class="col-md-12">
                                                 <span id="loading-button" class="small text-primary" style="display: none;">Please Wait....</span>
@@ -94,75 +107,53 @@
         </div>
     </div>
     {{>footerscript}}
-    <script>
-        // Counter to keep track of added elements
-        let elementCounter = 0;
-        
-        // Function to create a new button with textboxes
-        function createButtonWithTextboxes(parentElement, level = 0, maxLevel = 5) {
-            if (level >= maxLevel) {
-                alert('Maximum level reached!');
-                return;
-            }
-            
-            const container = document.createElement('div');
-            container.className = 'container1';
-            container.dataset.level = level;
-            
-            // Create textbox group 1
-            const textboxGroup1 = document.createElement('div');
-            textboxGroup1.className = 'textbox-group formfields';
-            const label1 = document.createElement('label');
-            //label1.textContent = `Title`;
-            const input1 = document.createElement('input');
-            input1.type = 'text';
-            input1.placeholder = 'Title';
-            textboxGroup1.appendChild(label1);
-            textboxGroup1.appendChild(input1);
-            
-            // Create textbox group 2
-            const textboxGroup2 = document.createElement('div');
-            textboxGroup2.className = 'textbox-group formfields';
-            const label2 = document.createElement('label');
-            //label2.textContent = `Value `;
-            const input2 = document.createElement('input');
-            input2.type = 'text';
-            input2.placeholder = 'Value';
-            textboxGroup2.appendChild(label2);
-            textboxGroup2.appendChild(input2);
-            
-            // Create add button
-            const addButton = document.createElement('button');
-            addButton.type = 'button';
-            addButton.textContent = `Add New `;
-            addButton.className = `btn btn-sm add-new btn-primary`;
-            addButton.onclick = function() {
-                createButtonWithTextboxes(container, level + 1, maxLevel);
-            };
-            
-            const removeButton = document.createElement('button');
-            removeButton.type = 'button';
-            removeButton.className = `btn btn-sm delete-row btn-primary`;
-            removeButton.textContent = 'Remove';
-            removeButton.onclick = function() {
-                parentElement.removeChild(container);
-            };
-            
-            container.appendChild(textboxGroup1);
-            container.appendChild(textboxGroup2);
-            container.appendChild(removeButton);
-            if(level == 0){container.appendChild(addButton);}
-            
-            parentElement.appendChild(container);
-            elementCounter++;
+    <script type="text/javascript">
+        function getSubServices(id){
+            $("#service_response").html("");
+            $.ajax({
+                type: "POST",
+                url: '/clients/get_sub_services',
+                data: {service_type_id: id},
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                success: function(response){
+                  let html = '';
+                  if(response.success == 1){
+                    let data = response.data;
+                    if(data && data.length > 0){
+                        
+                        data.map((item,index) => {
+                            html += '<div class="row">';
+                            html += '<div class="col-1">';
+                            html += '<input type="checkbox" name="meta_'+item.meta_id+'" id="meta_'+item.meta_id+'" class="formfields form-control mt-2" value="'+item.meta_id+'" />';
+                            html += '</div>';
+                            html += '<div class="col-11">';
+                            html += '<label class="small" for="meta'+item.meta_id+'">'+item.sub_service_title+'</label>';
+                            html += '</div>';
+                            html += '</div>';
+                        });
+                        $("#service_response").html(html);
+                    }
+                  }
+                }
+            });
         }
-        
-        // Initialize the first button
-        document.addEventListener('DOMContentLoaded', function() {
-            const rootContainer = document.getElementById('service-meta');
-            createButtonWithTextboxes(rootContainer);
-        });
-        
+        $(document).ready(function(){
+            
+            $("#service_type").change(function(){
+                getSubServices(this.value);
+            });
+            if($("#service_type").val() > 0){
+                getSubServices($("#service_type").val());
+                setTimeout(function(){
+                    {{#each meta_data}}
+                    console.log({{sub_service_id}});
+                        $("#meta_{{sub_service_id}}").prop('checked', true);
+                    {{/each}}
+                },1000);
+            }
+        })
     </script>
 </body>
 </html>

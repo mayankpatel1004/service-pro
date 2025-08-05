@@ -195,13 +195,34 @@ module.exports = {
         }];
     },
     serviceType() {
-        return [{
-            'ID': 'Service',
-            'NAME': 'Service'
-        }, {
-            'ID': 'Program',
-            'NAME': 'Program'
-        }];
+        return new Promise(async (resolve, reject) => {
+            let sqlQuery = `SELECT service_type_id as ID,service_type_title as NAME 
+            FROM service_type 
+            WHERE deleted_status = 'N'
+            ORDER BY display_order ASC`;
+            db.query(sqlQuery, (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            })
+        });
+    },
+    getClients() {
+        return new Promise(async (resolve, reject) => {
+            let sqlQuery = `SELECT user_id as ID,user_firstname as NAME 
+            FROM users 
+            WHERE user_role_id > 2 AND deleted_status = 'N'
+            ORDER BY user_id DESC`;
+            db.query(sqlQuery, (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            })
+        });
     },
     getAllRoles() {
         return new Promise(async (resolve, reject) => {
