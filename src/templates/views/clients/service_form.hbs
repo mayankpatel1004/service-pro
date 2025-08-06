@@ -148,7 +148,6 @@
                 getSubServices($("#service_type").val());
                 setTimeout(function(){
                     {{#each meta_data}}
-                    console.log({{sub_service_id}});
                         $("#meta_{{sub_service_id}}").prop('checked', true);
                     {{/each}}
                 },1000);

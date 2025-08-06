@@ -44,10 +44,8 @@
                                     <table class="table table-striped">
                                       <thead class="text-primary">
                                         <tr>
-                                            <th>
-                                                <input type="checkbox" onchange="checkAll(this,'allitems')" id="checkall" name="chk[]" class="ml-2" />
-                                            </th>
                                           <th>Name</th>
+                                          <th>Email</th>
                                           <th>Company</th>
                                           <th>SrNo</th>
                                           <th>Action</th>
@@ -92,7 +90,6 @@
                     'Authorization': 'Bearer ' + localStorage.getItem('token')
                 },
                 success: function(response){
-                    console.log(response);
                   let counter = 0;
                   let items = response.data;
                   if(items.length > 0){
@@ -100,17 +97,16 @@
                         counter++;
                         $("#listing_display_data").append(`
                             <tr>
-                                <td><input type="checkbox" class="checkbox_css ml-3 sales_summary_list_checkbox" name="chk[]" id="chk_${item.service_id}" accept="allitems" value="${item.service_id}" /></td>
-                                <td><a href="{{formUrl}}?edit_id=${item.service_id}">${item.user_firstname}</a></td>
-                                <td><a href="{{formUrl}}?edit_id=${item.service_id}">${item.company_name}</a></td>
+                                <td>${item.user_firstname}</td>
+                                <td>${item.user_email}</td>
+                                <td>${item.company_name}</td>
                                 <td>${counter}</td>
-                                <td><a href="{{formUrl}}?edit_id=${item.service_id}" class="btn btn-primary btn-sm">+</a></td>
+                                <td><a href="{{formUrl}}?edit_id=${item.service_id}" class="btn btn-primary btn-sm  border-round">Manage Service</a></td>
                                 <td>${item.service_id}</td>
                             </tr>
                         `);
                     });
                     let page_number = $("#current_page_no").val();
-                    console.log(response.arrTotalPages.length)
                     if(response.arrTotalPages.length == 1){
                         pagination_html += `<option value="1">1</option>`;
                     } else {
