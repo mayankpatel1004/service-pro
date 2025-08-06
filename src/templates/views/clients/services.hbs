@@ -29,13 +29,13 @@
                                         <div class="col-2 justify-content-end">
                                             <select class="form-control" id="select_status">
                                                 <option value="">Select Status</option>
-                                                <option value="Y">Active</option>
-                                                <option value="N">Inactive</option>
                                                 <option value="T">Delete</option>
-                                                <option value="ES">Export Selected</option>
-                                                <option value="EA">Export All</option>
                                             </select>
                                         </div>
+                                        <!-- <option value="Y">Active</option>
+                                        <option value="N">Inactive</option>
+                                        <option value="ES">Export Selected</option>
+                                        <option value="EA">Export All</option>-->
                                         <div class="col-2 justify-content-end">
                                             <button class="btn btn-sm btn-primary" id="search_by_name_btn" onclick="updateStatus()">Apply</button>
                                             <a class="btn btn-sm btn-primary float-right" href="{{formUrl}}">+</a>
@@ -44,6 +44,7 @@
                                     <table class="table table-striped">
                                       <thead class="text-primary">
                                         <tr>
+                                          <th><input type="checkbox" onchange="checkAll(this,'allitems')" id="checkall" name="chk[]" class="ml-2" /></th>
                                           <th>Name</th>
                                           <th>Email</th>
                                           <th>Company</th>
@@ -97,6 +98,7 @@
                         counter++;
                         $("#listing_display_data").append(`
                             <tr>
+                                <td><input type="checkbox" class="checkbox_css ml-3 sales_summary_list_checkbox" name="chk[]" id="chk_${item.service_id}" accept="allitems" value="${item.service_id}" /></td>
                                 <td>${item.user_firstname}</td>
                                 <td>${item.user_email}</td>
                                 <td>${item.company_name}</td>
